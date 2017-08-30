@@ -1,0 +1,46 @@
+version: "3"
+
+services:
+  postgresql:
+     image: sandeepambati/postgres
+     environment:
+        - POSTGRESQL_USER=bitbucket
+        - POSTGRESQL_PASS=bitbucket
+        - POSTGRESQL_DB=bitbucket
+     volumes:
+        - "postgresql-data:/var/lib/postgresql/9.4/main"
+        - "postgresql-log:/var/log/postgresql"
+        - "postgresql-conf:/etc/postgresql/9.4/main"
+     ports:
+        - "7995:5432"
+     networks:
+        database:
+          aliases:
+              - database
+              - db
+              - postgresql
+  bitbucket:
+     image: sandeepambati/bitbucket
+     ports:
+        - "7990:7990"
+        - "7999:7999"
+     volumes:
+        - "bitbucket-data:/var/atlassian/application-data/bitbucket"
+     container_name: bitbucket_container
+     links:
+        - postgresql
+     networks:
+       - database
+
+volumes:
+   bitbucket-data:
+     driver: local
+   postgresql-data:
+     driver: local
+   postgresql-log:
+     driver: local
+   postgresql-conf:
+     driver: local
+
+networks:
+  database: 

@@ -1,0 +1,45 @@
+version: "3"
+
+services:
+  postgresql:
+     image: sandeepjasper/postgres
+     environment:
+        - POSTGRESQL_USER=nexus
+        - POSTGRESQL_PASS=nexus
+        - POSTGRESQL_DB=nexus
+     volumes:
+        - "postgresql-data:/var/lib/postgresql/9.4/main"
+        - "postgresql-log:/var/log/postgresql"
+        - "postgresql-conf:/etc/postgresql/9.4/main"
+     ports:
+        - "8083:5432"
+     networks:
+        database:
+          aliases:
+              - database
+              - db
+              - postgresql
+  nexus:
+    image: sandeepjasper/nexus
+    ports:
+      - "8081:8081"
+    volumes:
+      - "nexus-data:/nexus-data"
+    container_name: nexus_container
+    links:
+      - postgresql
+    networks:
+      - database
+
+volumes:
+   nexus-data:
+     driver: local
+   postgresql-data:
+     driver: local
+   postgresql-log:
+     driver: local
+   postgresql-conf:
+     driver: local
+
+networks:
+   database:

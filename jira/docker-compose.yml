@@ -1,0 +1,48 @@
+version: "3"
+
+services:
+  postgresql:
+     image: sandeepjasper/postgres
+     environment:
+        - POSTGRESQL_USER=jira
+        - POSTGRESQL_PASS=jira
+        - POSTGRESQL_DB=jira
+     volumes:
+        - "postgresql-data:/var/lib/postgresql/9.4/main"
+        - "postgresql-log:/var/log/postgresql"
+        - "postgresql-conf:/etc/postgresql/9.4/main"
+     ports:
+        - "8005:5432"
+     networks:
+        database:
+          aliases:
+              - database
+              - db
+              - postgresql
+  jira:
+     image: sandeepjasper/jira
+     ports:
+        - "8000:8080"
+     volumes:
+        - "jira-data:/var/atlassian/jira"
+        - "jira-logs:/opt/atlassian/jira/logs"
+     container_name: jira_container
+     links:
+        - postgresql
+     networks:
+       - database
+
+volumes:
+   jira-data:
+     driver: local
+   jira-logs:
+     driver: local
+   postgresql-data:
+     driver: local
+   postgresql-log:
+     driver: local
+   postgresql-conf:
+     driver: local
+
+networks:
+  database: 

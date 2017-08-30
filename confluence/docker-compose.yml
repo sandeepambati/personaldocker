@@ -1,0 +1,49 @@
+version: "3"
+
+services:
+  postgresql:
+     image: sandeepjasper/postgres
+     environment:
+        - POSTGRESQL_USER=confluence
+        - POSTGRESQL_PASS=confluence
+        - POSTGRESQL_DB=confluence
+     volumes:
+        - "postgresql-data:/var/lib/postgresql/9.4/main"
+        - "postgresql-log:/var/log/postgresql"
+        - "postgresql-conf:/etc/postgresql/9.4/main"
+     ports:
+        - "8093:5432"
+     networks:
+        database:
+          aliases:
+              - database
+              - db
+              - postgresql
+  confluence:
+     image: sandeepjasper/confluence
+     ports:
+        - "8090:8090"
+        - "8091:8091"
+     volumes:
+        - "confluence-data:/var/atlassian/application-data/confluence"
+        - "confluence-install:/opt/atlassian/confleunce"
+     container_name: confluence_container
+     links:
+        - postgresql
+     networks:
+       - database
+
+volumes:
+   confluence-data:
+     driver: local
+   confluence-install:
+     driver: local
+   postgresql-data:
+     driver: local
+   postgresql-log:
+     driver: local
+   postgresql-conf:
+     driver: local
+
+networks:
+  database: 

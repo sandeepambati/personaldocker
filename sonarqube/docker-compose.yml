@@ -1,0 +1,46 @@
+version: "3"
+
+services:
+  postgresql:
+     image: sandeepjasper/postgres
+     environment:
+        - POSTGRESQL_USER=sonar
+        - POSTGRESQL_PASS=sonar
+        - POSTGRESQL_DB=sonar
+     volumes:
+        - "postgresql-data:/var/lib/postgresql/9.4/main"
+        - "postgresql-log:/var/log/postgresql"
+        - "postgresql-conf:/etc/postgresql/9.4/main"
+     ports:
+        - "9010:5432"
+     networks:
+        database:
+          aliases:
+              - database
+              - db
+              - postgresql
+  sonarqube:
+     image: sandeepjasper/sonarqube
+     ports:
+        - "9000:9000"
+        - "443"
+     volumes:
+        - "sonar-data:/opt/sonarqube/data"
+     container_name: sonarqube_container
+     links:
+        - postgresql
+     networks:
+       - database
+
+volumes:
+   sonar-data:
+     driver: local
+   postgresql-data:
+     driver: local
+   postgresql-log:
+     driver: local
+   postgresql-conf:
+     driver: local
+
+networks:
+   database:

@@ -1,0 +1,46 @@
+version: "3"
+
+services:
+  postgresql:
+     image: sandeepjasper/postgres
+     environment:
+        - POSTGRESQL_USER=jenkins
+        - POSTGRESQL_PASS=jenkins
+        - POSTGRESQL_DB=jenkins
+     volumes:
+        - "postgresql-data:/var/lib/postgresql/9.4/main"
+        - "postgresql-log:/var/log/postgresql"
+        - "postgresql-conf:/etc/postgresql/9.4/main"
+     ports:
+        - "8082:5432"
+     networks:
+        database:
+          aliases:
+            - database
+            - db
+            - postgresql
+  jenkins:
+     image: sandeepjasper/jenkins
+     ports:
+        - "8080:8080"
+        - "50000:50000"
+     volumes:
+        - "jenkins-data:/var/jenkins_home"
+     container_name: jenkins_container
+     links:
+        - postgresql
+     networks:
+        - database
+
+volumes:
+   jenkins-data:
+     driver: local
+   postgresql-data:
+     driver: local
+   postgresql-log:
+     driver: local
+   postgresql-conf:
+     driver: local
+
+networks:
+   database:
